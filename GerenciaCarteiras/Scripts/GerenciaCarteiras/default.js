@@ -38,7 +38,7 @@ function sair() {
 }
 
 function programarAtualizacaoSaldoBitMiner() {
-    var listaCarteiras = $('#listaCarteiras').val();
+    var listaCarteiras = JSON.parse($('#listaCarteiras').val());
     $.each(listaCarteiras, function (i, elemento) {
         chamadaAjax(urlListarEnderecos, {
             accountId: elemento.id

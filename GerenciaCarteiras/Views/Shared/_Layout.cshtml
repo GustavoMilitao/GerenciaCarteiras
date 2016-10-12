@@ -15,15 +15,16 @@
 </head>
 <body>
     @RenderBody()
-    @RenderSection("scripts", required: false)
-    @RenderSection("scriptspartial", false)
-    @RenderSection("modal", false)
     @Html.Partial("_FormRedirecionamento")
     @Html.Partial("_ModalCarregando")
 
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/jqueryval")
     @Scripts.Render("~/bundles/bootstrap")
+
+    @RenderSection("modal", false)
+    @RenderSection("scripts", required: false)
+    @RenderSection("scriptspartial", false)
 </body>
 </html>
 

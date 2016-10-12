@@ -154,7 +154,7 @@
     </div>
 </div>
 
-@Html.Hidden("listaCarteiras", new JavaScriptSerializer().Serialize(Model.Carteiras).ToString(), new { id = "listaCarteiras" })
+@Html.Hidden("listaCarteiras", new JavaScriptSerializer().Serialize(Model.Carteiras), new { id = "listaCarteiras" })
 
 @section scripts {
     <script type="text/javascript">
