@@ -1,0 +1,170 @@
+﻿@using GerenciaCarteiras.Models
+@using System.Web.Script.Serialization;
+
+@model ListaCarteirasModel
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@{ string primary = String.Empty;
+    bool par = false;
+}
+
+<div class="col-sm-12">
+    <div style="margin: 0% 0% 0% 5%">
+        <button type="submit" class="btn btn-primary">
+            Sair
+        </button>
+    </div>
+    <div id="div-grid-lista-carteiras">
+        <form id="formDefault">
+            @if (Model.Carteiras.Count > 0)
+            {
+                <table class="lista-carteiras__grid grid-carteiras grid-padrao">
+                    <colgroup>
+                        <col style="width: 8%;" span="1">
+                        <col style="width: 0%;" span="1">
+                        <col style="width: 0%;" span="1">
+                        <col style="width: 4%;" span="1">
+                        <col style="width: 3%;" span="1">
+                        <col style="width: 8%;" span="1">
+                        <col style="width: 8%;" span="1">
+                        <col style="width: 8%;" span="1">
+                        <col style="width: 4%;" span="1">
+                        <col style="width: 5%;" span="1">
+                        <col style="width: 8%;" span="1">
+                        <col style="width: 8%;" span="1">
+                        <col style="width: 6%;" span="1">
+                    </colgroup>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nome</th>
+                            <th>Primária</th>
+                            <th>Tipo</th>
+                            <th>Moeda</th>
+                            <th>
+                                <table class="lista-carteiras__grid grid-carteiras grid-padrao">
+                                    <colgroup>
+                                        <col span="1" style="width: 50%;">
+                                        <col span="1" style="width: 50%;">
+                                    </colgroup>
+                                    <thead>
+                                        <tr>Saldo</tr>
+                                        <tr>
+                                            <th>Valor</th>
+                                            <th>Moeda</th>
+                                        </tr>
+                                    </thead>
+                                </table>
+                            </th>
+                            <th>
+                                <table class="lista-carteiras__grid grid-carteiras grid-padrao">
+                                    <colgroup>
+                                        <col span="1" style="width: 50%;">
+                                        <col span="1" style="width: 50%;">
+                                    </colgroup>
+                                    <thead>
+                                        <tr>Saldo Nativo</tr>
+                                        <tr>
+                                            <th>Valor</th>
+                                            <th>Moeda</th>
+                                        </tr>
+                                    </thead>
+                                </table>
+                            </th>
+                            <th>Criado em</th>
+                            <th>Atualizado em</th>
+                            <th>Recurso</th>
+                            <th>Caminho do recurso</th>
+                            <th>Endereços</th>
+                            <th>Valor Atual BitMiner</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (CoinBaseMinering.Entities.Wallet wallet in Model.Carteiras)
+                        {
+                            <tr class="@(par ? "linha-par" : "linha-impar")">
+                                <td class="alinhamento-central">@wallet.id</td>
+                                <td>@wallet.name</td>
+                                <td>
+                                    <div class="check-customizado @(wallet.primary ? "selecionado" : String.Empty)">
+                                    </div>
+                                </td>
+                                <td class="alinhamento-central">@wallet.type</td>
+                                <td class="alinhamento-central">@wallet.currency</td>
+                                <td>
+                                    <table class="lista-carteiras__grid grid-carteiras grid-padrao">
+                                        <colgroup>
+                                            <col span="1" style="width: 50%;">
+                                            <col span="1" style="width: 50%;">
+                                        </colgroup>
+                                        <tbody>
+                                            <tr>
+                                                <td>@wallet.balance.amount</td>
+                                                <td>@wallet.balance.currency</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                                <td>
+                                    <table class="lista-carteiras__grid grid-carteiras grid-padrao">
+                                        <colgroup>
+                                            <col span="1" style="width: 50%;">
+                                            <col span="1" style="width: 50%;">
+                                        </colgroup>
+                                        <tbody>
+                                            <tr>
+                                                <td>@wallet.native_balance.amount</td>
+                                                <td>@wallet.native_balance.currency</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                                <td class="alinhamento-central">@wallet.created_at</td>
+                                <td class="alinhamento-central">@wallet.updated_at</td>
+                                <td class="alinhamento-central">@wallet.resource</td>
+                                <td class="alinhamento-central">@wallet.resource_path</td>
+                                <td class="alinhamento-central">
+                                    <button class="btn btn-primary" onclick="enderecos('@wallet.id')">
+                                        Endereços
+                                    </button>
+                                </td>
+                                @{ string idValorBitMiner = "valorBitMiner" + wallet.id; }
+                                <td id="@idValorBitMiner"></td>
+                            </tr>
+                                        par = !par;
+                                    }
+                    </tbody>
+                </table>
+                                    }
+                                    else
+                                    {
+                                        <div class="mensagem-nenhuma-carteira-encontrada">
+                                            Conta não possui carteiras adicionadas.
+                                        </div>
+                                    }
+        </form>
+    </div>
+    <div class="lista-articles">
+        <div id="lista_articles_pag" class="pagination paginacao-carteiras" style="border: 0">
+            <div class="break" style="margin: 0% -1% 0% 2%"></div>
+        </div>
+    </div>
+</div>
+
+@Html.Hidden("listaCarteiras", new JavaScriptSerializer().Serialize(Model.Carteiras).ToString(), new { id = "listaCarteiras" })
+
+@section scripts {
+    <script type="text/javascript">
+        var urlSair = '@Url.Action("Sair", "Login")';
+        var urlLoginHome = '@Url.Action("Login", "Login")';
+        var urlListarEnderecos = '@Url.Action("ListarEnderecos", "Carteiras")';
+        var urlBitMiner = 'https://bitminer.io/';
+        var contexto = [];
+    </script>
+@Scripts.Render("~/bundles/main")
+@Scripts.Render("~/bundles/default")
+@Scripts.Render("~/bundles/paginacao")
+}

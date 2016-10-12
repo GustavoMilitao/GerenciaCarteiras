@@ -1,0 +1,37 @@
+﻿@{ViewBag.Title = "Gerencia Carteiras 1.0"; }
+
+<form id="formLogin" method="post" action="#">
+    <div class="col-md-12 corpo">
+        <div class="container">
+            <div class="row">
+                <label>
+                    Chave API:
+                </label>
+            </div>
+            <div class="row">
+                <input type="text" name="chaveAPI" id="apiKey" style="width:30%" />
+            </div>
+            <div class="row">
+                <label>
+                    Segredo API:
+                </label>
+            </div>
+            <div class="row">
+                <input type="text" name="segredoAPI" id="apiSecret" style="width:30%" />
+            </div>
+            <div class="row" style="margin-top:1%">
+                <button class="btn btn-primary">Acessar</button>
+            </div>
+        </div>
+    </div>
+</form>
+
+@section scripts {
+    <script type="text/javascript">
+        var urlLogin = '@Url.Action("Logar","Login")';
+        var mensagemChaveAPIObrigatorio = 'A chave da API é obrigatória';
+        var mensagemSegredoAPIObrigatorio = 'O segredo da API é obrigatório';
+    </script>
+    @Scripts.Render("~/bundles/login")
+    @Scripts.Render("~/bundles/main")
+}

@@ -1,0 +1,317 @@
+﻿body {
+    padding-top: 50px;
+    padding-bottom: 20px;
+}
+
+/* Set padding to keep content from hitting the edges */
+.body-content {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+/* Override the default bootstrap behavior where horizontal description lists 
+   will truncate terms that are too long to fit in the left column 
+*/
+.dl-horizontal dt {
+    white-space: normal;
+}
+
+/* Set width on the form input elements since they're 100% wide by default */
+input,
+select,
+textarea {
+    max-width: 280px;
+}
+
+
+.modal-carregando__conteudo {
+    border-color: #004b37;
+}
+
+.modal-carregando__cabecalho {
+    background: #ffffff;
+    border-bottom: 0px;
+}
+
+.modal-carregando__titulo {
+    color: #004b35;
+    font-size: 22px;
+    font-weight: 700;
+    font-style: italic;
+    line-height: 10px;
+    text-transform: uppercase;
+    width: 100%;
+    padding: 20px;
+    padding-bottom: 0px;
+}
+
+.modal-carregando__rodape {
+    padding: 25px;
+    padding-right: 35px;
+    padding-left: 35px;
+}
+
+
+.modal-carregando__container-botao {
+    float: right;
+    text-align: center;
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+
+.lista-carteiras__container-grid {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+table.lista-carteiras__grid {
+    border-collapse: separate;
+    border-spacing: 1px;
+}
+
+    table.lista-carteiras__grid th {
+        border-bottom: none;
+        background-color: #004B35;
+        color: #fff;
+        font-size: 12px;
+        font-style: italic;
+        padding: 4px;
+        text-align: center;
+        text-transform: uppercase;
+    }
+
+    table.lista-carteiras__grid td {
+        text-align: center;
+        background-color: #EBEBEB;
+    }
+
+    table.lista-carteiras__grid a {
+        cursor: pointer;
+    }
+
+        table.lista-carteiras__grid a:hover {
+            text-decoration: none;
+        }
+
+.lista-carteiras__modal {
+    display: none;
+}
+
+.lista-carteiras__modal--titulo {
+    background-color: #fff;
+    margin: 15px -10px 0px;
+}
+
+.lista-carteiras__modal--container-conteudo {
+    background-color: #EDEDED;
+    margin: 0px -10px -10px;
+}
+
+.lista-carteiras__modal--conteudo {
+    background-color: #fff;
+    margin: 25px 10px;
+    padding: 15px;
+}
+
+.grid-padrao {
+    width: 90%;
+    margin: 10px 0 20px 0;
+    margin-left: 0.5%;
+    margin-right: 0.5%;
+}
+
+    .grid-padrao thead {
+        height: 60px;
+        color: white;
+        background-color: #0d4b35;
+    }
+
+        .grid-padrao thead tr {
+            text-align: center;
+        }
+
+        .grid-padrao thead th {
+            text-align: center;
+        }
+
+    .grid-padrao tr {
+        height: auto;
+        font-size: 14px;
+    }
+
+        .grid-padrao tr.linha-par {
+            background-color: #D9D9D9;
+        }
+
+    .grid-padrao tbody tr:hover {
+        background: #d4db26;
+    }
+
+    .grid-padrao tr:not(:last-child) td {
+        border-bottom: 1px solid #e3e3e3;
+    }
+
+    .grid-padrao tbody td {
+        border-right: 1px solid #AEAEAE;
+    }
+
+        .grid-padrao tbody td.alinhamento-central {
+            text-align: center;
+        }
+
+.grid-carteiras {
+    margin: 0% 0% 0% 5%;
+}
+
+    .grid-carteiras .check-customizado {
+        margin: auto;
+        float: none;
+        border-radius: 0%;
+    }
+
+.grid-lista-carteiras .botao-detalhes-carteiras {
+    margin: auto;
+    cursor: pointer;
+}
+
+.checkbox-personalizado {
+    width: 23px;
+    height: 23px;
+    background: url("../Content/img/icones/radio-button2.svg");
+    cursor: pointer;
+    margin-right: 10px;
+}
+
+.lista-carteiras .formulario-pesquisa {
+    width: 100%;
+    margin-top: 30px;
+    margin-left: 0px;
+}
+
+.lista-carteiras .resultado-da-consulta {
+    color: #2d2d2d;
+    font-style: italic;
+    font-size: 22px;
+    font-weight: 500;
+}
+
+.check-customizado {
+    float: left;
+    width: 20px;
+    height: 20px;
+    background: url("../Content/img/icons/spr-icons.png");
+    background-position-y: -29px;
+    background-position-x: -1px;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+    .check-customizado.selecionado {
+        background-position-y: -29px;
+        background-position-x: -27px;
+    }
+
+.mensagem-nenhuma-carteira-encontrada {
+    color: #2d2d2d;
+    font-style: italic;
+    font-size: 22px;
+    font-weight: 500;
+    text-align: center;
+    width: 100%;
+}
+
+
+.lista-articles {
+    width: 100%;
+}
+
+    .lista-articles .pagination {
+        border-top: 1px solid #ededed;
+        padding-top: 10px;
+        text-align: center;
+        width: 100%;
+    }
+
+    .lista-articles .break {
+        width: 96%;
+        margin: 0% 0% 0% 2%;
+    }
+
+        .lista-articles .break a {
+            cursor: pointer;
+        }
+
+    .lista-articles .pagination .btn-prev {
+        float: left;
+    }
+
+    .lista-articles .pagination .btn-next {
+        float: right;
+    }
+
+    .lista-articles .pagination a.pager {
+        text-decoration: none;
+        margin: 1px;
+        display: inline-block;
+        padding: 11px 17px;
+        background: #d7d7d7;
+        color: #50575d;
+        font-family: 'LocalizaDinDisplay_Medium', sans-serif;
+        text-transform: uppercase;
+    }
+
+        .lista-articles .pagination a.pager:hover {
+            background: #ececec;
+            color: #b6b6b6;
+            text-decoration: underline;
+        }
+
+    .lista-articles .pagination a.disabled {
+        background: #ececec;
+        color: #b6b6b6;
+    }
+
+    .lista-articles .pagination a.selected,
+    .lista-articles .pagination a.selected:hover {
+        background: #004b36;
+        color: #fff;
+        text-decoration: none;
+    }
+
+.pagination {
+    border: 0;
+    margin: 0% 0% 0% 2%;
+}
+
+    .pagination > li > a,
+    .pagination > li > span {
+        line-height: 20px;
+        padding: 5px 10px;
+        color: #333;
+        font-size: 11px;
+    }
+
+    .pagination > li > span {
+        color: #888;
+    }
+
+    .pagination > li > a:hover {
+        background: #f7fbfe;
+    }
+
+    .pagination > li > span:hover {
+        background: #FFF;
+    }
+
+    .pagination.pagination-lg > li > a,
+    .pagination.pagination-lg > li > span {
+        padding: 8px 15px;
+        font-size: 13px;
+    }
+
+    .pagination.pagination-sm > li > a,
+    .pagination.pagination-sm > li > span {
+        padding: 3px 10px;
+        font-size: 11px;
+    }
