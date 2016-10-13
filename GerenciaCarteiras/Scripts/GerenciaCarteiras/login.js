@@ -2,7 +2,7 @@
     var apiKeyVal = $('#apiKey').val();
     var apiSecretVal = $('#apiSecret').val();
     if (apiKeyVal && apiSecretVal) {
-        chamadaAjax(urlLogin,
+        chamadaAjaxPost(urlLogin,
                     {
                         apiKey: apiKeyVal,
                         apiSecret: apiSecretVal

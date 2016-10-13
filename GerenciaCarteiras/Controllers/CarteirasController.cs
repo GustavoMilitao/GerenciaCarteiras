@@ -5,6 +5,7 @@ using ListarCarteirasBitMiner.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 
@@ -31,6 +32,18 @@ namespace GerenciaCarteiras.Controllers
         public JsonResult ListarEnderecos(string accountId)
         {
             return Json(new { listaEnderecos = ChamadaAPI.ListarEnderecosPorIDCarteira(accountId) });
+        }
+
+        public JsonResult AddressResponseBitMiner(string address)
+        {
+            try
+            {
+                return Json(new { sucesso = true, response = ChamadaAPI.GetResponseLoggedInBitminer(address).Result });
+            }
+            catch(Exception ex)
+            {
+                return Json(new { sucesso = false, mensagem = ex.Message });
+            }
         }
     }
 }

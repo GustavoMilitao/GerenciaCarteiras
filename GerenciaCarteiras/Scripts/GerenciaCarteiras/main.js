@@ -13,7 +13,7 @@
 }
 
 
-function chamadaAjax(url, parametros, callbackSucesso, callbackErro, exibirCarregando) {
+function chamadaAjaxPost(url, parametros, callbackSucesso, callbackErro, exibirCarregando) {
     $.ajax({
         type: "POST",
         url: url,
@@ -53,42 +53,45 @@ function chamadaAjax(url, parametros, callbackSucesso, callbackErro, exibirCarre
     });
 }
 
-function chamadaAjaxGetGatheringWalletAmmount(url, cookies, campoAtualizar) {
-    //$.ajax({
-    //    type: "GET",
-    //    url: url,
-    //    async: true,
-    //    beforeSend: function (xhr) {
-    //        if(cookies){
-    //            xhr.setRequestHeader('Cookie', cookies);
-    //        }
-    //    },
-    //    xhrFields: {
-    //        withCredentials: (cookies != null && cookies && cookies != undefined)
-    //    },
-    //    success: function (response) {
-    //        if (response.responseText && response.responseText != undefined) {
-    //            var html = response.responseText();
-    //            campoAtualizar.val($(html).find('#btnform b').val());
-    //        }
-    //    },
-
-    //});
-    var xhttp;
-    if (window.XMLHttpRequest) {
-        xhttp = new XMLHttpRequest();
-    } else {
-        // code for IE6, IE5
-        xhttp = new ActiveXObject("Microsoft.XMLHTTP");
-    }
-    xhttp.withCredentials = true;
-    xhttp.open("GET", url, true);
-    xhttp.setRequestHeader("Cookie", cookies);
-    xhttp.send();
-    if (xhttp.responseText && xhttp.responseText != undefined) {
-        var html = response.responseText();
-        campoAtualizar.val($(html).find('#btnform b').val());
-    }
+function chamadaAjaxGet(url, parametros, callbackSucesso, callbackErro, exibirCarregando) {
+    $.ajax({
+        type: "GET",
+        url: url,
+        data: parametros,
+        crossDomain: true,
+        dataType: 'jsonp',
+        traditional: true,
+        success: function (args) {
+            if (args.expirou) {
+                exibirModalInformativo("Sua sessão expirou. Você será redirecionado para a tela de login", function () { location = args.urlSessaoExpirada; });
+            }
+            else {
+                callbackSucesso(args);
+            }
+        },
+        beforeSend: function () {
+            if (exibirCarregando == undefined)
+                ExibirModalCarregando();
+        },
+        complete: function () {
+            if (exibirCarregando == undefined)
+                EsconderModalCarregando();
+        },
+        error: function (reqObj, tipoErro, mensagemErro) {
+            var jsonValue = { MensagemDeErro: 'Ocorreu um erro ao executar a ação.' };
+            try {
+                jsonValue = jQuery.parseJSON(reqObj.responseText);
+            }
+            catch (excecao) {
+            }
+            exibirModalInformativo(jsonValue.MensagemDeErro);
+            if (reqObj.state() != 'rejected') {
+                if (callbackErro) {
+                    callbackErro(tipoErro, mensagemErro);
+                }
+            }
+        }
+    });
 }
 
 function ExibirModalCarregando() {

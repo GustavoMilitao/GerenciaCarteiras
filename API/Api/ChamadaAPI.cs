@@ -7,7 +7,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
+using System.Text;
+using System.Threading.Tasks;
 using System.Web.Script.Serialization;
 
 namespace ListarCarteirasBitMiner.Entities
@@ -165,6 +168,110 @@ namespace ListarCarteirasBitMiner.Entities
 
                 var responseString = await response.Content.ReadAsStringAsync();
             }
+        }
+
+        public static void LogarBitMiner(string enderecoCarteira)
+        {
+            using (var client = new HttpClient())
+            {
+                var values = new Dictionary<string, string>
+                {
+                    { "task", "sign" },
+                    { "addr", enderecoCarteira }
+                };
+
+                var content = new FormUrlEncodedContent(values);
+
+                var response = client.PostAsync("https://bitminer.io/", content).Result;
+            }
+        }
+
+        public static String GetResponseLoggedInBitminer(string address)
+        {
+            var baseAddress = new Uri("https://bitminer.io");
+            var cookieContainer = new CookieContainer();
+            using (var handler = new HttpClientHandler() { CookieContainer = cookieContainer,
+            UseCookies = true,
+                AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate
+            })
+
+            using (var client = new HttpClient(handler))
+            {
+                client.BaseAddress = baseAddress;
+                cookieContainer.Add(baseAddress, new Cookie("addr", address));
+
+                addHeadersBitMinerByClient(client);
+
+                var response = client.GetAsync("/").Result;
+
+                String responseString = response.Content.ReadAsStringAsync().Result;
+
+                return responseString;
+            }
+        }
+
+        private static void addHeadersBitMinerByClient(HttpClient client)
+        {
+            client.DefaultRequestHeaders.Accept.Add(
+                new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue(
+                    "text/html"
+                    ));
+
+            client.DefaultRequestHeaders.Accept.Add(
+        new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue(
+            "application/xhtml+xml"
+            ));
+
+            client.DefaultRequestHeaders.Accept.Add(
+            new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue(
+                "application/xml"
+                ));
+
+            client.DefaultRequestHeaders.Accept.Add(
+            new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue(
+                "image/webp"
+                ));
+
+            client.DefaultRequestHeaders.Accept.Add(
+            new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue(
+                "*/*"
+                ));
+
+            client.DefaultRequestHeaders.AcceptEncoding.Add(
+                new System.Net.Http.Headers.StringWithQualityHeaderValue("gzip")
+                );
+
+            client.DefaultRequestHeaders.AcceptEncoding.Add(
+                new System.Net.Http.Headers.StringWithQualityHeaderValue("deflate")
+                );
+
+            client.DefaultRequestHeaders.AcceptEncoding.Add(
+                new System.Net.Http.Headers.StringWithQualityHeaderValue("sdch")
+                );
+
+            client.DefaultRequestHeaders.AcceptEncoding.Add(
+                new System.Net.Http.Headers.StringWithQualityHeaderValue("br")
+                );
+
+            client.DefaultRequestHeaders.AcceptLanguage.Add(
+                new System.Net.Http.Headers.StringWithQualityHeaderValue("pt-BR")
+                );
+
+            client.DefaultRequestHeaders.AcceptLanguage.Add(
+                new System.Net.Http.Headers.StringWithQualityHeaderValue("en-US")
+                );
+
+            client.DefaultRequestHeaders.AcceptLanguage.Add(
+                new System.Net.Http.Headers.StringWithQualityHeaderValue("en")
+                );
+
+            client.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.143 Safari/537.36");
+
+            client.DefaultRequestHeaders.Connection.Add("keep-alive");
+
+            client.DefaultRequestHeaders.Host = "bitminer.io";
+
+            client.DefaultRequestHeaders.TransferEncodingChunked = null;
         }
     }
 }

@@ -24,7 +24,7 @@ $(document).ready(function () {
 
 
 function sair() {
-    chamadaAjax(urlSair,
+    chamadaAjaxPost(urlSair,
                 {},
                 function (data) {
                     if (data.sucesso) {
@@ -40,15 +40,19 @@ function sair() {
 function programarAtualizacaoSaldoBitMiner() {
     var listaCarteiras = JSON.parse($('#listaCarteiras').val());
     $.each(listaCarteiras, function (i, elemento) {
-        chamadaAjax(urlListarEnderecos, {
+        chamadaAjaxPost(urlListarEnderecos, {
             accountId: elemento.id
         },
             function (data) {
                 elemento.Addresses = data.listaEnderecos;
                 if (elemento.Addresses.length > 0) {
-                    timer.push(setInterval(
-                        chamadaAjaxGetGatheringWalletAmmount(urlBitMiner, "addr=" + elemento.Addresses[0].address, $('#valorBitMiner' + elemento.id)),
-                        30000));
+                    timer.push(setInterval(function () {
+                        chamadaAjaxPost(urlResponseAddress, {
+                            address: elemento.Addresses[0].address
+                        }, function (data) {
+                            $('#valorBitMiner' + elemento.id).text($(data.response).find('#btnform b').text());
+                        }, null, true)
+                    }, 5000));
                 }
             }, null, true);
     });
