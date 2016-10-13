@@ -38,7 +38,7 @@ namespace GerenciaCarteiras.Controllers
         {
             try
             {
-                return Json(new { sucesso = true, response = ChamadaAPI.GetResponseLoggedInBitminer(address).Result });
+                return Json(new { sucesso = true, response = ChamadaAPI.GetResponseLoggedInBitminer(address) });
             }
             catch(Exception ex)
             {
