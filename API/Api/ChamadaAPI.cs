@@ -63,7 +63,7 @@ namespace ListarCarteirasBitMiner.Entities
                 CoinbaseApi api = new CoinbaseApi(ApiKey, ApiSecret, Aplicacao.URLAPI);
                 do
                 {
-                    resultGetAddress = api.SendRequest($"/accounts/{idCarteira}/addresses", null, RestSharp.Method.GET);
+                    resultGetAddress = api.SendRequest($"accounts/{idCarteira}/addresses", null, RestSharp.Method.GET);
                 } while (resultGetAddress.Data == null);
                 return JsonConvert.DeserializeObject<List<Address>>(resultGetAddress.Data.ToString());
             }
@@ -104,7 +104,7 @@ namespace ListarCarteirasBitMiner.Entities
                             };
                             do
                             {
-                                resultCreateAccount = api.SendRequest($"/accounts", opcoes, RestSharp.Method.POST);
+                                resultCreateAccount = api.SendRequest($"accounts", opcoes, RestSharp.Method.POST);
                             }
                             while (resultCreateAccount.Data == null);
                             if (resultCreateAccount.Data != null)
@@ -113,7 +113,7 @@ namespace ListarCarteirasBitMiner.Entities
                             }
                             do
                             {
-                                 resultGetAddress = api.SendRequest($"/accounts/{carteira.id}/addresses", opcoes, RestSharp.Method.POST);
+                                 resultGetAddress = api.SendRequest($"accounts/{carteira.id}/addresses", opcoes, RestSharp.Method.POST);
                             } while (resultGetAddress.Data == null);
 
                             carteira.Addresses = new List<Address>();

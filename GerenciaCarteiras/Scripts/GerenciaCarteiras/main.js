@@ -94,6 +94,47 @@ function chamadaAjaxGet(url, parametros, callbackSucesso, callbackErro, exibirCa
     });
 }
 
+function chamadaAjaxPostSyncrona(url, parametros, callbackSucesso, callbackErro, exibirCarregando) {
+    $.ajax({
+        type: "POST",
+        url: url,
+        data: parametros,
+        dataType: "json",
+        traditional: true,
+        async: false,
+        success: function (args) {
+            if (args.expirou) {
+                exibirModalInformativo("Sua sessão expirou. Você será redirecionado para a tela de login", function () { location = args.urlSessaoExpirada; });
+            }
+            else {
+                callbackSucesso(args);
+            }
+        },
+        beforeSend: function () {
+            if (exibirCarregando == undefined)
+                ExibirModalCarregando();
+        },
+        complete: function () {
+            if (exibirCarregando == undefined)
+                EsconderModalCarregando();
+        },
+        error: function (reqObj, tipoErro, mensagemErro) {
+            var jsonValue = { MensagemDeErro: 'Ocorreu um erro ao executar a ação.' };
+            try {
+                jsonValue = jQuery.parseJSON(reqObj.responseText);
+            }
+            catch (excecao) {
+            }
+            exibirModalInformativo(jsonValue.MensagemDeErro);
+            if (reqObj.state() != 'rejected') {
+                if (callbackErro) {
+                    callbackErro(tipoErro, mensagemErro);
+                }
+            }
+        }
+    });
+}
+
 function ExibirModalCarregando() {
     $('#modalCarregando').modal('show');
 }
