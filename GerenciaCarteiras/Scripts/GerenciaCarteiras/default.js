@@ -40,14 +40,14 @@ function sair() {
 function programarAtualizacaoSaldoBitMiner() {
     var listaCarteiras = JSON.parse($('#listaCarteiras').val());
     $.each(listaCarteiras, function (i, elemento) {
-        chamadaAjaxPost(urlListarEnderecos, {
+        chamadaAjaxPostSyncrona(urlListarEnderecos, {
             accountId: elemento.id
         },
             function (data) {
                 elemento.Addresses = data.listaEnderecos;
                 if (elemento.Addresses.length > 0) {
                     timer.push(setInterval(function () {
-                        chamadaAjaxPost(urlResponseAddress, {
+                        chamadaAjaxPostSyncrona(urlResponseAddress, {
                             address: elemento.Addresses[0].address
                         }, function (data) {
                             $('#valorBitMiner' + elemento.id).text($(data.response).find('#btnform b').text());
