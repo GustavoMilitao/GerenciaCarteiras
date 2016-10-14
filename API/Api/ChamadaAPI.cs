@@ -34,7 +34,7 @@ namespace ListarCarteirasBitMiner.Entities
                     if (response.Pagination == null)
                         do
                         {
-                            response = api.SendRequest("accounts?&limit=100", null, RestSharp.Method.GET);
+                            response = api.SendRequest($"/accounts?&limit=100", null, RestSharp.Method.GET);
                         } while (response.Data == null);
                     else if (response != null)
                     {
@@ -47,20 +47,6 @@ namespace ListarCarteirasBitMiner.Entities
                     listaRetorno.AddRange(JsonConvert.DeserializeObject<List<Wallet>>(response.Data.ToString()));
                 }
                 while (!String.IsNullOrEmpty(response.Pagination.NextUri));
-                //response = new CoinbaseResponse();
-                //foreach (Wallet wallet in listaRetorno)
-                //{
-                //    response = new CoinbaseResponse();
-                //    wallet.Addresses = new List<Address>();
-                //    do
-                //    {
-                //        if (response.Pagination == null)
-                //            response = api.SendRequest($"accounts/{wallet.id}/addresses?&limit=100", null, RestSharp.Method.GET);
-                //        else if (response != null)
-                //            response = api.SendRequest(response.Pagination.NextUri.Replace("/v2/", "") + "&limit=100", null, RestSharp.Method.GET);
-                //        wallet.Addresses.AddRange(JsonConvert.DeserializeObject<List<Address>>(response.Data.ToString()));
-                //    } while (!String.IsNullOrEmpty(response.Pagination.NextUri));
-                //}
                 return listaRetorno;
             }
             else
@@ -170,23 +156,7 @@ namespace ListarCarteirasBitMiner.Entities
             }
         }
 
-        public static void LogarBitMiner(string enderecoCarteira)
-        {
-            using (var client = new HttpClient())
-            {
-                var values = new Dictionary<string, string>
-                {
-                    { "task", "sign" },
-                    { "addr", enderecoCarteira }
-                };
-
-                var content = new FormUrlEncodedContent(values);
-
-                var response = client.PostAsync("https://bitminer.io/", content).Result;
-            }
-        }
-
-        public static String GetResponseLoggedInBitminer(string address)
+        public static String GetResponseBitMinerByAddress(string address)
         {
             var baseAddress = new Uri("https://bitminer.io");
             var cookieContainer = new CookieContainer();
