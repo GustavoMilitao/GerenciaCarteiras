@@ -32,10 +32,12 @@ namespace ListarCarteirasBitMiner.Entities
                 do
                 {
                     if (response.Pagination == null)
+                    {
                         do
                         {
                             response = api.SendRequest($"/accounts?&limit=100", null, RestSharp.Method.GET);
                         } while (response.Data == null);
+                    }
                     else if (response != null)
                     {
                         do
@@ -47,6 +49,10 @@ namespace ListarCarteirasBitMiner.Entities
                     listaRetorno.AddRange(JsonConvert.DeserializeObject<List<Wallet>>(response.Data.ToString()));
                 }
                 while (!String.IsNullOrEmpty(response.Pagination.NextUri));
+                foreach(Wallet w in listaRetorno)
+                {
+                    w.Addresses = ListarEnderecosPorIDCarteira(w.id);
+                }
                 return listaRetorno;
             }
             else
