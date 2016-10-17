@@ -46,12 +46,12 @@ namespace GerenciaCarteiras.Controllers
                         {
 
                         }
-                        return Json(new { sucesso = true, urlListar = Url.Action("ListaCarteiras", "Carteiras") });
+                        return Json(new { sucesso = true, urlListar = Url.Action("Menu", "Carteiras") });
                     }
                     else
                     {
                         FormsAuthentication.SetAuthCookie(apiKey + ";" + apiSecret, true);
-                        return Json(new { sucesso = true, urlListar = Url.Action("ListaCarteiras", "Carteiras") });
+                        return Json(new { sucesso = true, urlListar = Url.Action("Menu", "Carteiras") });
                     }
                 }
                 else

@@ -238,6 +238,7 @@
     <Content Include="Scripts\GerenciaCarteiras\default.js" />
     <Content Include="Scripts\GerenciaCarteiras\login.js" />
     <Content Include="Scripts\GerenciaCarteiras\main.js" />
+    <Content Include="Scripts\GerenciaCarteiras\menu.js" />
     <Content Include="Scripts\GerenciaCarteiras\Paginacao.js" />
     <Content Include="Scripts\gridmvc.js" />
     <Content Include="Scripts\gridmvc.lang.fr.js" />
@@ -269,10 +270,10 @@
     <Content Include="Views\Default\Default.cshtml" />
     <Content Include="Views\Shared\_FormRedirecionamento.cshtml" />
     <Content Include="Views\Shared\_ModalCarregando.cshtml" />
+    <Content Include="Views\Carteiras\Menu.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Views\Carteiras\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />

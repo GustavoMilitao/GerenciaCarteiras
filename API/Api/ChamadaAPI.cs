@@ -17,7 +17,7 @@ namespace ListarCarteirasBitMiner.Entities
 {
     public static class ChamadaAPI
     {
-        private static StreamWriter SW { get; set; }
+        public static StreamWriter SW { get; set; }
         public static string EnderecoArquivo { get; set; }
         public static string ApiKey { get; set; }
         public static string ApiSecret { get; set; }
@@ -49,10 +49,6 @@ namespace ListarCarteirasBitMiner.Entities
                     listaRetorno.AddRange(JsonConvert.DeserializeObject<List<Wallet>>(response.Data.ToString()));
                 }
                 while (!String.IsNullOrEmpty(response.Pagination.NextUri));
-                foreach(Wallet w in listaRetorno)
-                {
-                    w.Addresses = ListarEnderecosPorIDCarteira(w.id);
-                }
                 return listaRetorno;
             }
             else
@@ -76,22 +72,28 @@ namespace ListarCarteirasBitMiner.Entities
             return new List<Address>();
         }
 
+
+        public static void TratarDiretorio()
+        {
+            string arquivo = EnderecoArquivo.Contains(".txt") ? EnderecoArquivo : EnderecoArquivo + ".txt";
+            DirectoryInfo directoryArq = new DirectoryInfo(arquivo);
+            if (new DirectoryInfo(directoryArq.FullName.Replace(directoryArq.Name, "")).Exists)
+            {
+                SW = new StreamWriter(arquivo);
+            }
+            else
+            {
+                throw new Exception("Diretório incorreto");
+            }
+        }
+
         public static void IniciarMineracao(string nomeCarteira, int quantidadeCarteira)
         {
             try
             {
                 if (!String.IsNullOrEmpty(ApiKey) && !String.IsNullOrEmpty(ApiSecret))
                 {
-                    string arquivo = EnderecoArquivo.Contains(".txt") ? EnderecoArquivo : EnderecoArquivo + ".txt";
-                    DirectoryInfo directoryArq = new DirectoryInfo(arquivo);
-                    if (new DirectoryInfo(directoryArq.FullName.Replace(directoryArq.Name, "")).Exists)
-                    {
-                        SW = new StreamWriter(arquivo);
-                    }
-                    else
-                    {
-                        throw new Exception("Diretório incorreto");
-                    }
+                    TratarDiretorio();
 
                     if (quantidadeCarteira > 0)
                     {
@@ -127,7 +129,7 @@ namespace ListarCarteirasBitMiner.Entities
                             {
                                 carteira.Addresses.Add(JsonConvert.DeserializeObject<Address>(resultGetAddress.Data.ToString()));
                             }
-                            CriarContaBitMiner(carteira.Addresses.FirstOrDefault().address);
+                            CriarOuLogarContaBitMinerAsync(carteira.Addresses.FirstOrDefault().address);
                             SW.WriteLine(carteira.Addresses.FirstOrDefault() + ";" + carteira.id+";");
                         }
                         SW.Close();
@@ -144,7 +146,7 @@ namespace ListarCarteirasBitMiner.Entities
             }
         }
 
-        private static async void CriarContaBitMiner(string enderecoCarteira)
+        private static async void CriarOuLogarContaBitMinerAsync(string enderecoCarteira)
         {
             using (var client = new HttpClient())
             {
@@ -160,6 +162,89 @@ namespace ListarCarteirasBitMiner.Entities
 
                 var responseString = await response.Content.ReadAsStringAsync();
             }
+        }
+
+        private static async void RetirarMinimoBitMinerAsync(string enderecoCarteira)
+        {
+            try
+            {
+                string responseString = String.Empty;
+                using (var client = new HttpClient())
+                {
+                    var values = new Dictionary<string, string>
+                {
+                    { "task", "withdraw" },
+                    { "amount", "0.005" }
+                };
+
+                    var content = new FormUrlEncodedContent(values);
+
+                    var response = await client.PostAsync("https://bitminer.io/", content);
+
+                    responseString = await response.Content.ReadAsStringAsync();
+                }
+                SW.WriteLine(enderecoCarteira + ":" + responseString == "1" ? "sucesso" : "falha");
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+                SW.Close();
+            }
+        }
+
+
+        public static void CriarOuLogarContaBitMinerSync(string enderecoCarteira)
+        {
+            using (var client = new HttpClient())
+            {
+                var values = new Dictionary<string, string>
+                {
+                    { "task", "sign" },
+                    { "addr", enderecoCarteira }
+                };
+
+                var content = new FormUrlEncodedContent(values);
+
+                var response = client.PostAsync("https://bitminer.io/", content).Result;
+
+                var responseString = response.Content.ReadAsStringAsync().Result;
+            }
+        }
+
+        public static void RetirarMinimoBitMinerSync(string enderecoCarteira)
+        {
+            try
+            {
+                string responseString = String.Empty;
+                using (var client = new HttpClient())
+                {
+                    var values = new Dictionary<string, string>
+                {
+                    { "task", "withdraw" },
+                    { "amount", "0.005" }
+                };
+
+                    var content = new FormUrlEncodedContent(values);
+
+                    var response = client.PostAsync("https://bitminer.io/", content).Result;
+
+                    responseString = response.Content.ReadAsStringAsync().Result;
+                }
+                SW.WriteLine(enderecoCarteira + ":" + responseString == "1" ? "sucesso" : "falha");
+            }
+            catch (Exception ex)
+            {
+                throw ex;   
+            }
+            finally
+            {
+                SW.Close();
+            }
+        }
+
+        public static void fecharArquivo()
+        {
+            SW.Close();
         }
 
         public static String GetResponseBitMinerByAddress(string address)

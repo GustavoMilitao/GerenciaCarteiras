@@ -21,12 +21,7 @@ function chamadaAjaxPost(url, parametros, callbackSucesso, callbackErro, exibirC
         dataType: "json",
         traditional: true,
         success: function (args) {
-            if (args.expirou) {
-                exibirModalInformativo("Sua sessão expirou. Você será redirecionado para a tela de login", function () { location = args.urlSessaoExpirada; });
-            }
-            else {
                 callbackSucesso(args);
-            }
         },
         beforeSend: function () {
             if (exibirCarregando == undefined)
@@ -152,4 +147,18 @@ function exibirModalInformativo(mensagem, callbackClick) {
         $('#btnModalInformativo').click(callbackClick);
         $('#btnModalInformativoFechar').click(callbackClick);
     }
+}
+
+function listarTodosOsEnderecos() {
+    var listaCarteiras = JSON.parse($('#listaCarteiras').val());
+    listaCarteiras.forEach(function (elemento, i) {
+        $('#processandoConta').text("Processando conta " + (i + 1) + " de " + listaCarteiras.length);
+        chamadaAjaxPostSyncrona(urlListarEnderecos, {
+            accountId: elemento.id
+        },
+            function (data) {
+                elemento.Addresses = data.listaEnderecos;
+            }, null, false)
+    });
+    $('#processandoConta').text("");
 }

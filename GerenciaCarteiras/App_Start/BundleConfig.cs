@@ -19,6 +19,9 @@ namespace GerenciaCarteiras
             bundles.Add(new ScriptBundle("~/bundles/main").Include(
                         "~/Scripts/GerenciaCarteiras/main.js"));
 
+            bundles.Add(new ScriptBundle("~/bundles/menu").Include(
+                        "~/Scripts/GerenciaCarteiras/menu.js"));
+
             bundles.Add(new ScriptBundle("~/bundles/paginacao").Include(
                         "~/Scripts/GerenciaCarteiras/paginacao.js"));
 
