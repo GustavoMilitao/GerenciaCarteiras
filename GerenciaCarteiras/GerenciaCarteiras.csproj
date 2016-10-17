@@ -226,6 +226,9 @@
     <Content Include="Content\Gridmvc.css" />
     <Content Include="Content\img\icons\spr-icons.png" />
     <Content Include="favicon.ico" />
+    <Content Include="Files\enderecos - Conta 1.txt" />
+    <Content Include="Files\retirada - Conta 1.txt" />
+    <Content Include="Files\retiradas - Conta 2.txt" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
