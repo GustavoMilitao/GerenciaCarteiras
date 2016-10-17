@@ -25,8 +25,14 @@ namespace GerenciaCarteiras
             bundles.Add(new ScriptBundle("~/bundles/paginacao").Include(
                         "~/Scripts/GerenciaCarteiras/paginacao.js"));
 
+            bundles.Add(new ScriptBundle("~/bundles/log4js").Include(
+                        "~/Scripts/GerenciaCarteiras/log4js.js"));
+
             bundles.Add(new ScriptBundle("~/bundles/default").Include(
                         "~/Scripts/GerenciaCarteiras/default.js"));
+
+            bundles.Add(new ScriptBundle("~/bundles/logs2indexeddb").Include(
+                        "~/Scripts/GerenciaCarteiras/logs2indexeddb.js"));
 
             bundles.Add(new ScriptBundle("~/bundles/jqueryval").Include(
                         "~/Scripts/jquery.validate*"));

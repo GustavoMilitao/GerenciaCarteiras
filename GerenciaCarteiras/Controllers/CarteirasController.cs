@@ -4,6 +4,7 @@ using GerenciaCarteiras.Models;
 using ListarCarteirasBitMiner.Entities;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
@@ -41,13 +42,13 @@ namespace GerenciaCarteiras.Controllers
             {
                 return Json(new { sucesso = true, response = ChamadaAPI.GetResponseBitMinerByAddress(address) });
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return Json(new { sucesso = false, mensagem = ex.Message });
             }
         }
-        
-        
+
+
         public ActionResult Menu(string apiKey, string apiSecret)
         {
             ListaCarteirasModel model = new ListaCarteirasModel();
@@ -59,29 +60,44 @@ namespace GerenciaCarteiras.Controllers
             return View("~/Views/Carteiras/Menu.cshtml", model);
         }
 
-        public JsonResult Retirar(string listaCarteirasString)
+        public JsonResult SalvarCarteirasArqTexto(string listaCarteiras, string caminhoArquivo)
         {
             try
             {
-                List<Wallet> listaCarteiras = new JavaScriptSerializer().Deserialize<List<Wallet>>(listaCarteirasString);
-                ChamadaAPI.EnderecoArquivo = @"D:\LOGS\retiradas.txt";
-                ChamadaAPI.TratarDiretorio();
-                foreach (Wallet w in listaCarteiras)
-                {
-                    if (w.Addresses.Count > 0)
-                    {
-                        ChamadaAPI.CriarOuLogarContaBitMinerSync(w.Addresses.FirstOrDefault(a => a != null).id);
-                        ChamadaAPI.RetirarMinimoBitMinerSync(w.Addresses.First(a => a != null).id);
-                    }
-                    else
-                    {
-                        ChamadaAPI.SW.WriteLine("Carteira com Id: " + w.id + " está sem endereços");
-                    }
-                }
-                ChamadaAPI.fecharArquivo();
+                List<string> lista = new JavaScriptSerializer().Deserialize<List<Wallet>>(listaCarteiras).Select(a => a.id).ToList();
+                ChamadaAPI.ListarEnderecosPorListaCarteira(lista, caminhoArquivo);
                 return Json(new { sucesso = true });
             }
-            catch(Exception ex)
+            catch (Exception e)
+            {
+                return Json(new { sucesso = false, mensagem = e.Message });
+            }
+        }
+
+        public JsonResult Retirar(string enderecoArquivo)
+        {
+            try
+            {
+                string endereco = String.Empty;
+                ChamadaAPI.EnderecoArquivo = @"C:\LOGS\retirada.txt";
+                ChamadaAPI.TratarDiretorio();
+                if (ChamadaAPI.TratarDiretorioRetorno(enderecoArquivo))
+                {
+                    StreamReader SR = new StreamReader(enderecoArquivo);
+                    while ((endereco = SR.ReadLine()) != null)
+                    {
+                        if (!String.IsNullOrEmpty(endereco))
+                        {
+                            ChamadaAPI.CriarOuLogarContaBitMinerSync(endereco);
+                            ChamadaAPI.RetirarMinimoBitMinerSync(endereco);
+                        }
+                    }
+                    ChamadaAPI.fecharArquivo();
+                    return Json(new { sucesso = true });
+                }
+                return Json(new { sucesso = false, mensagem = "Diretório incorreto" });
+            }
+            catch (Exception ex)
             {
                 return Json(new { sucesso = false, mensagem = ex.Message });
             }

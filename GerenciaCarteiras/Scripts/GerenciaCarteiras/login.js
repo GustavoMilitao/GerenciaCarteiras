@@ -9,7 +9,7 @@
                     },
                     function (data) {
                         if (data.sucesso) {
-                            redirecionarParaPaginaDefault(apiKeyVal, apiSecretVal, data.urlListar)
+                            redirecionarParaPaginaDefault(apiKeyVal, apiSecretVal, data.urlListar);
                         }
                         else {
                             alert("Dados da conta incorretos ou vazios");

@@ -236,7 +236,9 @@
     <Content Include="Grid.mvc.readme" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\GerenciaCarteiras\default.js" />
+    <Content Include="Scripts\GerenciaCarteiras\log4js.js" />
     <Content Include="Scripts\GerenciaCarteiras\login.js" />
+    <Content Include="Scripts\GerenciaCarteiras\logs2indexeddb.js" />
     <Content Include="Scripts\GerenciaCarteiras\main.js" />
     <Content Include="Scripts\GerenciaCarteiras\menu.js" />
     <Content Include="Scripts\GerenciaCarteiras\Paginacao.js" />

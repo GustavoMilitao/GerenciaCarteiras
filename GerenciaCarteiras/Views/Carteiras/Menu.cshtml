@@ -22,11 +22,19 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-sm-6">
-                <button disabled id="btnListar" class="btn btn-primary">Listar</button>
+            <div class="col-sm-3">
+                <button type="button" id="btnSalvarEnderecos" class="btn btn-primary">Salvar Endereços</button>
             </div>
-            <div class="col-sm-6">
-                <button disabled id="btnRetirar" class="btn btn-primary">Retirar</button>
+            <div class="col-sm-3">
+                Caminho Salvar Arquivo
+                <input id="inputCaminhoArquivo" />
+            </div>
+            <div class="col-sm-3">
+                <button type="button" id="btnRetirar" class="btn btn-primary">Retirar</button>
+            </div>
+            <div class="col-sm-3">
+                Caminho Ler Arquivo
+                <input id="caminhoArquivoLer" />
             </div>
         </div>
     </div>
@@ -38,6 +46,7 @@
     <script type="text/javascript">
         var urlRetirar = '@Url.Action("Retirar","Carteiras")';
         var urlListarEnderecos = '@Url.Action("ListarEnderecos", "Carteiras")';
+        var urlSalvarEnderecos = '@Url.Action("SalvarCarteirasArqTexto", "Carteiras")';
     </script>
     @Scripts.Render("~/bundles/main")
     @Scripts.Render("~/bundles/menu")

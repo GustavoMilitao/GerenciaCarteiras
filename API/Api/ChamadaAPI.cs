@@ -72,6 +72,39 @@ namespace ListarCarteirasBitMiner.Entities
             return new List<Address>();
         }
 
+        public static void ListarEnderecosPorListaCarteira(List<string> listaCarteiras, string caminhoArquivo)
+        {
+            try
+            {
+                EnderecoArquivo = caminhoArquivo;
+                TratarDiretorio();
+                List<Address> listaEnderecos;
+                if (listaCarteiras.Count > 0)
+                {
+                    foreach (string idCarteira in listaCarteiras)
+                    {
+                        if (!String.IsNullOrEmpty(idCarteira))
+                        {
+                            CoinbaseResponse resultGetAddress = new CoinbaseResponse();
+                            CoinbaseApi api = new CoinbaseApi(ApiKey, ApiSecret, Aplicacao.URLAPI);
+                            do
+                            {
+                                resultGetAddress = api.SendRequest($"accounts/{idCarteira}/addresses", null, RestSharp.Method.GET);
+                            } while (resultGetAddress.Data == null);
+                            listaEnderecos = JsonConvert.DeserializeObject<List<Address>>(resultGetAddress.Data.ToString());
+                            if(listaEnderecos != null && listaEnderecos.Count > 0)
+                                SW.WriteLine(listaEnderecos.FirstOrDefault().address);
+                        }
+                    }
+                }
+                ChamadaAPI.fecharArquivo();
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+        }
+
 
         public static void TratarDiretorio()
         {
@@ -85,6 +118,17 @@ namespace ListarCarteirasBitMiner.Entities
             {
                 throw new Exception("Diretório incorreto");
             }
+        }
+
+        public static bool TratarDiretorioRetorno(string diretorio)
+        {
+            string arquivo = EnderecoArquivo.Contains(".txt") ? EnderecoArquivo : EnderecoArquivo + ".txt";
+            DirectoryInfo directoryArq = new DirectoryInfo(arquivo);
+            if (new DirectoryInfo(directoryArq.FullName.Replace(directoryArq.Name, "")).Exists)
+            {
+                return true;
+            }
+            return false;
         }
 
         public static void IniciarMineracao(string nomeCarteira, int quantidadeCarteira)
@@ -117,11 +161,11 @@ namespace ListarCarteirasBitMiner.Entities
                             while (resultCreateAccount.Data == null);
                             if (resultCreateAccount.Data != null)
                             {
-                                 carteira = JsonConvert.DeserializeObject<Wallet>(resultCreateAccount.Data.ToString());
+                                carteira = JsonConvert.DeserializeObject<Wallet>(resultCreateAccount.Data.ToString());
                             }
                             do
                             {
-                                 resultGetAddress = api.SendRequest($"accounts/{carteira.id}/addresses", opcoes, RestSharp.Method.POST);
+                                resultGetAddress = api.SendRequest($"accounts/{carteira.id}/addresses", opcoes, RestSharp.Method.POST);
                             } while (resultGetAddress.Data == null);
 
                             carteira.Addresses = new List<Address>();
@@ -130,7 +174,7 @@ namespace ListarCarteirasBitMiner.Entities
                                 carteira.Addresses.Add(JsonConvert.DeserializeObject<Address>(resultGetAddress.Data.ToString()));
                             }
                             CriarOuLogarContaBitMinerAsync(carteira.Addresses.FirstOrDefault().address);
-                            SW.WriteLine(carteira.Addresses.FirstOrDefault() + ";" + carteira.id+";");
+                            SW.WriteLine(carteira.Addresses.FirstOrDefault() + ";" + carteira.id + ";");
                         }
                         SW.Close();
                     }
@@ -216,29 +260,40 @@ namespace ListarCarteirasBitMiner.Entities
             try
             {
                 string responseString = String.Empty;
-                using (var client = new HttpClient())
-                {
-                    var values = new Dictionary<string, string>
-                {
-                    { "task", "withdraw" },
-                    { "amount", "0.005" }
-                };
 
+                var baseAddress = new Uri("https://bitminer.io");
+                var cookieContainer = new CookieContainer();
+                using (var handler = new HttpClientHandler()
+                {
+                    CookieContainer = cookieContainer,
+                    UseCookies = true,
+                    AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate
+                })
+
+                using (var client = new HttpClient(handler))
+                {
+                    client.BaseAddress = baseAddress;
+                    cookieContainer.Add(baseAddress, new Cookie("addr", enderecoCarteira));
+
+                    addHeadersBitMinerByClient(client);
+
+                    var values = new Dictionary<string, string>
+                    {
+                        { "task", "withdraw" },
+                        { "amount", "0.005" }
+                    };
                     var content = new FormUrlEncodedContent(values);
 
-                    var response = client.PostAsync("https://bitminer.io/", content).Result;
+                    var response = client.PostAsync("/", content).Result;
 
                     responseString = response.Content.ReadAsStringAsync().Result;
                 }
-                SW.WriteLine(enderecoCarteira + ":" + responseString == "1" ? "sucesso" : "falha");
+                SW.WriteLine(enderecoCarteira + ":" + (responseString == "1" ? "sucesso" : "falha"));
             }
             catch (Exception ex)
             {
-                throw ex;   
-            }
-            finally
-            {
                 SW.Close();
+                throw ex;
             }
         }
 
@@ -251,8 +306,10 @@ namespace ListarCarteirasBitMiner.Entities
         {
             var baseAddress = new Uri("https://bitminer.io");
             var cookieContainer = new CookieContainer();
-            using (var handler = new HttpClientHandler() { CookieContainer = cookieContainer,
-            UseCookies = true,
+            using (var handler = new HttpClientHandler()
+            {
+                CookieContainer = cookieContainer,
+                UseCookies = true,
                 AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate
             })
 
