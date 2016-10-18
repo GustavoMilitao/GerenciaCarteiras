@@ -1,4 +1,4 @@
-﻿using CoinBaseMinering.Entities;
+﻿using Entidades.Entities;
 using GridMvc;
 using System;
 using System.Collections.Generic;

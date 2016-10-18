@@ -1,20 +1,10 @@
-﻿using CoinBaseMinering.Util;
-using System;
-using System.Globalization;
+﻿using System;
 using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
-using System.Web;
 using System.Web.Mvc;
-using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.Owin;
-using Microsoft.Owin.Security;
-using GerenciaCarteiras.Models;
-using ListarCarteirasBitMiner.Entities;
-using CoinBaseMinering.Entities;
 using System.Collections.Generic;
 using System.Web.Security;
 using Coinbase;
+using Util.Aplicacao;
 
 namespace GerenciaCarteiras.Controllers
 {

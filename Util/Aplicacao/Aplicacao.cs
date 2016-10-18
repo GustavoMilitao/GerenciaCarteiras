@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CoinBaseMinering.Util
+namespace Util.Aplicacao
 {
     public class Aplicacao
     {

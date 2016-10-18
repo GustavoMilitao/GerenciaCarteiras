@@ -1,7 +1,7 @@
 ﻿using Coinbase.ObjectModel;
-using CoinBaseMinering.Entities;
+using Entidades.Entities;
 using GerenciaCarteiras.Models;
-using ListarCarteirasBitMiner.Entities;
+using API.Entities;
 using System;
 using System.Collections.Generic;
 using System.IO;

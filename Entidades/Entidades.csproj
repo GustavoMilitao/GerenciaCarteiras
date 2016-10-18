@@ -110,6 +110,8 @@
   <ItemGroup>
     <Compile Include="Entities\Address.cs" />
     <Compile Include="Entities\Balance.cs" />
+    <Compile Include="Entities\BasicEntity.cs" />
+    <Compile Include="Entities\Transaction.cs" />
     <Compile Include="Entities\Wallet.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

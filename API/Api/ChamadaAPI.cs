@@ -1,7 +1,6 @@
 ﻿using Coinbase;
 using Coinbase.ObjectModel;
-using CoinBaseMinering.Entities;
-using CoinBaseMinering.Util;
+using Entidades.Entities;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -9,11 +8,10 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
 using System.Web.Script.Serialization;
+using Util.Aplicacao;
 
-namespace ListarCarteirasBitMiner.Entities
+namespace API.Entities
 {
     public static class ChamadaAPI
     {
@@ -352,6 +350,73 @@ namespace ListarCarteirasBitMiner.Entities
                 String responseString = response.Content.ReadAsStringAsync().Result;
 
                 return responseString;
+            }
+        }
+
+        public static void TransferirFundosContas(string nomeContaPrincipal, string caminhoArquivo)
+        {
+            try
+            {
+                EnderecoArquivo = caminhoArquivo;
+                TratarDiretorio();
+                List<Wallet> listaContas = ListarCarteiras();
+                Wallet carteiraDestino = listaContas.Where(w => w.name == nomeContaPrincipal).FirstOrDefault();
+                if (carteiraDestino != null)
+                {
+                    listaContas.Remove(carteiraDestino);
+                    foreach (Wallet w in listaContas)
+                    {
+                        TransferirFundos(w, carteiraDestino, w.balance.amount);
+                    }
+                }
+                else
+                {
+                    SW.WriteLine("Carteira principal não encontrada");
+                }
+                fecharArquivo();
+            }
+            catch(Exception e)
+            {
+                fecharArquivo();
+                throw e;
+            }
+        }
+
+        private static void TransferirFundos(Wallet carteiraSaida, Wallet carteiraDestino, double fundos)
+        {
+            try
+            {
+                if (carteiraSaida.id != carteiraDestino.id)
+                {
+                    CoinbaseResponse transactionResponse = new CoinbaseResponse();
+                    var api = new CoinbaseApi(ApiKey, ApiSecret, Aplicacao.URLAPI);
+
+                    var opcoes = new
+                    {
+                        type = "transfer",
+                        to = carteiraDestino.id,
+                        amount = fundos.ToString(),
+                        currency = "BTC",
+                        description = ""
+                    };
+                    
+                    do
+                    {
+                        transactionResponse = api.SendRequest($"accounts/{carteiraSaida.id}/transactions", opcoes, RestSharp.Method.POST);
+                    } while (transactionResponse.Data == null);
+                    Transaction transacao = JsonConvert.DeserializeObject<Transaction>(transactionResponse.Data.ToString());
+                    SW.WriteLine("Transação de "+ fundos+ " BTC da carteira " + carteiraSaida.name 
+                        +" para a carteira "+ carteiraDestino.name +" gerou o status : " + transacao.status);
+                }
+                else
+                {
+                    SW.WriteLine("{Carteira de destino}");
+                }
+            }
+            catch(Exception e)
+            {
+                fecharArquivo();
+                throw e;
             }
         }
 
