@@ -35,7 +35,7 @@ namespace GerenciaCarteiras.Controllers
             if (!String.IsNullOrEmpty(apiKey) && !String.IsNullOrEmpty(apiSecret))
             {
                 CoinbaseApi api = new CoinbaseApi(apiKey, apiSecret, Aplicacao.URLAPI);
-                var response = api.SendRequest($"/accounts?&limit=100", null, RestSharp.Method.GET);
+                var response = api.SendRequest($"/accounts?&limit=1", null, RestSharp.Method.GET);
                 if (response.Data != null)
                 {
                     string identificador = System.Web.HttpContext.Current.User.Identity.Name;
@@ -46,12 +46,12 @@ namespace GerenciaCarteiras.Controllers
                         {
 
                         }
-                        return Json(new { sucesso = true, urlListar = Url.Action("Menu", "Carteiras") });
+                        return Json(new { sucesso = true, urlListar = Url.Action("Enderecos", "Carteiras") });
                     }
                     else
                     {
                         FormsAuthentication.SetAuthCookie(apiKey + ";" + apiSecret, true);
-                        return Json(new { sucesso = true, urlListar = Url.Action("Menu", "Carteiras") });
+                        return Json(new { sucesso = true, urlListar = Url.Action("Enderecos", "Carteiras") });
                     }
                 }
                 else

@@ -1,0 +1,45 @@
+﻿@using System.Web.Script.Serialization;
+@model GerenciaCarteiras.Models.ListaCarteirasModel
+@{
+    ViewBag.Title = "Endereços";
+}
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<form id="formCriarEnderecos">
+    <div class="col-sm-12">
+        <div class="row">
+            <div class="col-sm-2">
+                <h4>Dados carteira</h4>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-2">
+                Quantidade de endereços
+                <input id="qtdEnderecos" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-2">
+                Caminho Salvar Arquivo
+                <input id="inputCaminhoArquivo" />
+            </div>
+            <div class="col-sm-2">
+                <button type="button" id="btnCriarEnderecos" class="btn btn-primary">Criar Endereços</button>
+            </div>
+        </div>
+    </div>
+</form>
+
+@Html.Hidden("listaCarteiras", new JavaScriptSerializer().Serialize(Model.Carteiras), new { id = "listaCarteiras" })
+
+@section scripts {
+    <script type="text/javascript">
+        var urlCriarEnderecos = '@Url.Action("CriarEnderecosCarteiraBitMinerELogar", "Carteiras")'
+    </script>
+    @Scripts.Render("~/bundles/main")
+    @Scripts.Render("~/bundles/enderecos")
+}

@@ -74,6 +74,30 @@ namespace GerenciaCarteiras.Controllers
             }
         }
 
+        public JsonResult CriarEnderecosCarteiraBitMinerELogar(string idCarteira, string enderecoArquivo, int quantidadeEnderecos)
+        {
+            try
+            {
+                List<Address> lista = ChamadaAPI.CriarEnderecosCarteiraBitMinerELogar(idCarteira, enderecoArquivo, quantidadeEnderecos);
+                return Json(new { sucesso = true, listaEnderecos = new JavaScriptSerializer().Serialize(lista) });
+            }
+            catch(Exception e)
+            {
+                return Json(new { sucesso = false, mensagem = e.Message });
+            }
+        }
+
+        public ActionResult Enderecos(string apiKey, string apiSecret)
+        {
+            ListaCarteirasModel model = new ListaCarteirasModel();
+            ChamadaAPI.ApiKey = apiKey;
+            ChamadaAPI.ApiSecret = apiSecret;
+
+            List<Wallet> walletList = ChamadaAPI.ListarCarteiras();
+            model.Carteiras = walletList;
+            return View("~/Views/Carteiras/Enderecos.cshtml", model);
+        }
+
         public JsonResult Retirar(string enderecoArquivo)
         {
             try

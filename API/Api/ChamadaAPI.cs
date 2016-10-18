@@ -231,9 +231,36 @@ namespace ListarCarteirasBitMiner.Entities
             }
             catch (Exception ex)
             {
-                throw ex;
                 SW.Close();
+                throw ex;
             }
+        }
+
+        public static List<Address> CriarEnderecosCarteiraBitMinerELogar(string idCarteira, string enderecoArquivo, int quantidadeEnderecos)
+        {
+            List<Address> listaRetorno = new List<Address>();
+            Address endereco;
+            EnderecoArquivo = enderecoArquivo;
+            TratarDiretorio();
+            CoinbaseResponse resultCreateAddress = new CoinbaseResponse();
+            var api = new CoinbaseApi(ApiKey, ApiSecret, Aplicacao.URLAPI);
+            for (int i = 0; i < quantidadeEnderecos; i++)
+            {
+                do
+                {
+                    var opcoes = new
+                    {
+                        name = "Endereco" + i
+                    };
+                resultCreateAddress = api.SendRequest($"accounts/{idCarteira}/addresses", opcoes, RestSharp.Method.POST);
+                } while (resultCreateAddress.Data == null);
+                 endereco = JsonConvert.DeserializeObject<Address>(resultCreateAddress.Data.ToString());
+                listaRetorno.Add(endereco);
+                CriarOuLogarContaBitMinerSync(endereco.address);
+                SW.WriteLine(endereco.address);
+            }
+            fecharArquivo();
+            return listaRetorno;
         }
 
 

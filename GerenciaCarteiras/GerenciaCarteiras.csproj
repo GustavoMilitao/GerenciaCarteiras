@@ -227,6 +227,8 @@
     <Content Include="Content\img\icons\spr-icons.png" />
     <Content Include="favicon.ico" />
     <Content Include="Files\enderecos - Conta 1.txt" />
+    <Content Include="Files\enderecos.txt" />
+    <Content Include="Files\OutrosEnderecos.txt" />
     <Content Include="Files\retirada - Conta 1.txt" />
     <Content Include="Files\retiradas - Conta 2.txt" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
@@ -239,6 +241,7 @@
     <Content Include="Grid.mvc.readme" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\GerenciaCarteiras\default.js" />
+    <Content Include="Scripts\GerenciaCarteiras\enderecos.js" />
     <Content Include="Scripts\GerenciaCarteiras\log4js.js" />
     <Content Include="Scripts\GerenciaCarteiras\login.js" />
     <Content Include="Scripts\GerenciaCarteiras\logs2indexeddb.js" />
@@ -276,6 +279,7 @@
     <Content Include="Views\Shared\_FormRedirecionamento.cshtml" />
     <Content Include="Views\Shared\_ModalCarregando.cshtml" />
     <Content Include="Views\Carteiras\Menu.cshtml" />
+    <Content Include="Views\Carteiras\Enderecos.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
