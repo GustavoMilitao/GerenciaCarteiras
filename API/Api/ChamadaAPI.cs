@@ -15,10 +15,112 @@ namespace API.Entities
 {
     public static class ChamadaAPI
     {
+        #region properties
         public static StreamWriter SW { get; set; }
         public static string EnderecoArquivo { get; set; }
         public static string ApiKey { get; set; }
         public static string ApiSecret { get; set; }
+        #endregion
+
+        #region file manager
+        public static void TratarDiretorio()
+        {
+            string arquivo = EnderecoArquivo.Contains(".txt") ? EnderecoArquivo : EnderecoArquivo + ".txt";
+            DirectoryInfo directoryArq = new DirectoryInfo(arquivo);
+            if (new DirectoryInfo(directoryArq.FullName.Replace(directoryArq.Name, "")).Exists)
+            {
+                SW = new StreamWriter(arquivo);
+            }
+            else
+            {
+                throw new Exception("Diretório incorreto");
+            }
+        }
+
+        public static bool TratarDiretorioRetorno(string diretorio)
+        {
+            string arquivo = EnderecoArquivo.Contains(".txt") ? EnderecoArquivo : EnderecoArquivo + ".txt";
+            DirectoryInfo directoryArq = new DirectoryInfo(arquivo);
+            if (new DirectoryInfo(directoryArq.FullName.Replace(directoryArq.Name, "")).Exists)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        public static void fecharArquivo()
+        {
+            SW.Close();
+        }
+
+        #endregion
+
+        #region Iniciar Mineracao
+
+        public static void CriarCarteirasPorNomeEQuantidadeEIniciarMineracao(string nomeCarteira, int quantidadeCarteira)
+        {
+            try
+            {
+                if (!String.IsNullOrEmpty(ApiKey) && !String.IsNullOrEmpty(ApiSecret))
+                {
+                    TratarDiretorio();
+
+                    if (quantidadeCarteira > 0)
+                    {
+                        var api = new CoinbaseApi(ApiKey, ApiSecret, Aplicacao.URLAPI);
+                        if (nomeCarteira == null)
+                            nomeCarteira = String.Empty;
+                        var jsdesserializador = new JavaScriptSerializer();
+                        CoinbaseResponse resultCreateAccount = new CoinbaseResponse();
+                        CoinbaseResponse resultGetAddress = new CoinbaseResponse();
+                        Wallet carteira = new Wallet();
+                        for (int i = 0; i < quantidadeCarteira; i++)
+                        {
+                            var opcoes = new
+                            {
+                                name = nomeCarteira + i
+                            };
+                            do
+                            {
+                                resultCreateAccount = api.SendRequest($"accounts", opcoes, RestSharp.Method.POST);
+                            }
+                            while (resultCreateAccount.Data == null);
+                            if (resultCreateAccount.Data != null)
+                            {
+                                carteira = JsonConvert.DeserializeObject<Wallet>(resultCreateAccount.Data.ToString());
+                            }
+                            do
+                            {
+                                resultGetAddress = api.SendRequest($"accounts/{carteira.id}/addresses", opcoes, RestSharp.Method.POST);
+                            } while (resultGetAddress.Data == null);
+
+                            carteira.Addresses = new List<Address>();
+                            if (resultGetAddress.Data != null)
+                            {
+                                carteira.Addresses.Add(JsonConvert.DeserializeObject<Address>(resultGetAddress.Data.ToString()));
+                            }
+                            CriarOuLogarContaBitMinerAsync(carteira.Addresses.FirstOrDefault().address);
+                            SW.WriteLine(carteira.Addresses.FirstOrDefault() + ";" + carteira.id + ";");
+                        }
+                        SW.Close();
+                    }
+                }
+                else
+                {
+                    throw new Exception("Chave da API inválida ou não adicionada.");
+                }
+            }
+            catch
+            {
+                throw new Exception("Diretório incorreto");
+            }
+        }
+
+        #endregion
+
+        #region métodos públicos
+
+        #region Chamadas API Coinbase
 
         public static List<Wallet> ListarCarteiras()
         {
@@ -90,7 +192,7 @@ namespace API.Entities
                                 resultGetAddress = api.SendRequest($"accounts/{idCarteira}/addresses", null, RestSharp.Method.GET);
                             } while (resultGetAddress.Data == null);
                             listaEnderecos = JsonConvert.DeserializeObject<List<Address>>(resultGetAddress.Data.ToString());
-                            if(listaEnderecos != null && listaEnderecos.Count > 0)
+                            if (listaEnderecos != null && listaEnderecos.Count > 0)
                                 SW.WriteLine(listaEnderecos.FirstOrDefault().address);
                         }
                     }
@@ -100,137 +202,6 @@ namespace API.Entities
             catch (Exception e)
             {
                 throw e;
-            }
-        }
-
-
-        public static void TratarDiretorio()
-        {
-            string arquivo = EnderecoArquivo.Contains(".txt") ? EnderecoArquivo : EnderecoArquivo + ".txt";
-            DirectoryInfo directoryArq = new DirectoryInfo(arquivo);
-            if (new DirectoryInfo(directoryArq.FullName.Replace(directoryArq.Name, "")).Exists)
-            {
-                SW = new StreamWriter(arquivo);
-            }
-            else
-            {
-                throw new Exception("Diretório incorreto");
-            }
-        }
-
-        public static bool TratarDiretorioRetorno(string diretorio)
-        {
-            string arquivo = EnderecoArquivo.Contains(".txt") ? EnderecoArquivo : EnderecoArquivo + ".txt";
-            DirectoryInfo directoryArq = new DirectoryInfo(arquivo);
-            if (new DirectoryInfo(directoryArq.FullName.Replace(directoryArq.Name, "")).Exists)
-            {
-                return true;
-            }
-            return false;
-        }
-
-        public static void IniciarMineracao(string nomeCarteira, int quantidadeCarteira)
-        {
-            try
-            {
-                if (!String.IsNullOrEmpty(ApiKey) && !String.IsNullOrEmpty(ApiSecret))
-                {
-                    TratarDiretorio();
-
-                    if (quantidadeCarteira > 0)
-                    {
-                        var api = new CoinbaseApi(ApiKey, ApiSecret, Aplicacao.URLAPI);
-                        if (nomeCarteira == null)
-                            nomeCarteira = String.Empty;
-                        var jsdesserializador = new JavaScriptSerializer();
-                        CoinbaseResponse resultCreateAccount = new CoinbaseResponse();
-                        CoinbaseResponse resultGetAddress = new CoinbaseResponse();
-                        Wallet carteira = new Wallet();
-                        for (int i = 0; i < quantidadeCarteira; i++)
-                        {
-                            var opcoes = new
-                            {
-                                name = nomeCarteira + i
-                            };
-                            do
-                            {
-                                resultCreateAccount = api.SendRequest($"accounts", opcoes, RestSharp.Method.POST);
-                            }
-                            while (resultCreateAccount.Data == null);
-                            if (resultCreateAccount.Data != null)
-                            {
-                                carteira = JsonConvert.DeserializeObject<Wallet>(resultCreateAccount.Data.ToString());
-                            }
-                            do
-                            {
-                                resultGetAddress = api.SendRequest($"accounts/{carteira.id}/addresses", opcoes, RestSharp.Method.POST);
-                            } while (resultGetAddress.Data == null);
-
-                            carteira.Addresses = new List<Address>();
-                            if (resultGetAddress.Data != null)
-                            {
-                                carteira.Addresses.Add(JsonConvert.DeserializeObject<Address>(resultGetAddress.Data.ToString()));
-                            }
-                            CriarOuLogarContaBitMinerAsync(carteira.Addresses.FirstOrDefault().address);
-                            SW.WriteLine(carteira.Addresses.FirstOrDefault() + ";" + carteira.id + ";");
-                        }
-                        SW.Close();
-                    }
-                }
-                else
-                {
-                    throw new Exception("Chave da API inválida ou não adicionada.");
-                }
-            }
-            catch
-            {
-                throw new Exception("Diretório incorreto");
-            }
-        }
-
-        private static async void CriarOuLogarContaBitMinerAsync(string enderecoCarteira)
-        {
-            using (var client = new HttpClient())
-            {
-                var values = new Dictionary<string, string>
-                {
-                    { "task", "sign" },
-                    { "addr", enderecoCarteira }
-                };
-
-                var content = new FormUrlEncodedContent(values);
-
-                var response = await client.PostAsync("https://bitminer.io/", content);
-
-                var responseString = await response.Content.ReadAsStringAsync();
-            }
-        }
-
-        private static async void RetirarMinimoBitMinerAsync(string enderecoCarteira)
-        {
-            try
-            {
-                string responseString = String.Empty;
-                using (var client = new HttpClient())
-                {
-                    var values = new Dictionary<string, string>
-                {
-                    { "task", "withdraw" },
-                    { "amount", "0.005" }
-                };
-
-                    var content = new FormUrlEncodedContent(values);
-
-                    var response = await client.PostAsync("https://bitminer.io/", content);
-
-                    responseString = await response.Content.ReadAsStringAsync();
-                }
-                SW.WriteLine(enderecoCarteira + ":" + responseString == "1" ? "sucesso" : "falha");
-            }
-            catch (Exception ex)
-            {
-                SW.Close();
-                throw ex;
             }
         }
 
@@ -250,9 +221,9 @@ namespace API.Entities
                     {
                         name = "Endereco" + i
                     };
-                resultCreateAddress = api.SendRequest($"accounts/{idCarteira}/addresses", opcoes, RestSharp.Method.POST);
+                    resultCreateAddress = api.SendRequest($"accounts/{idCarteira}/addresses", opcoes, RestSharp.Method.POST);
                 } while (resultCreateAddress.Data == null);
-                 endereco = JsonConvert.DeserializeObject<Address>(resultCreateAddress.Data.ToString());
+                endereco = JsonConvert.DeserializeObject<Address>(resultCreateAddress.Data.ToString());
                 listaRetorno.Add(endereco);
                 CriarOuLogarContaBitMinerSync(endereco.address);
                 SW.WriteLine(endereco.address);
@@ -261,6 +232,37 @@ namespace API.Entities
             return listaRetorno;
         }
 
+        public static void TransferirFundosContas(string nomeContaPrincipal, string caminhoArquivo)
+        {
+            try
+            {
+                EnderecoArquivo = caminhoArquivo;
+                TratarDiretorio();
+                List<Wallet> listaContas = ListarCarteiras();
+                Wallet carteiraDestino = listaContas.Where(w => w.name == nomeContaPrincipal).FirstOrDefault();
+                if (carteiraDestino != null)
+                {
+                    listaContas.Remove(carteiraDestino);
+                    foreach (Wallet w in listaContas)
+                    {
+                        TransferirFundos(w, carteiraDestino, w.balance.amount);
+                    }
+                }
+                else
+                {
+                    SW.WriteLine("Carteira principal não encontrada");
+                }
+                fecharArquivo();
+            }
+            catch(Exception e)
+            {
+                fecharArquivo();
+                throw e;
+            }
+        }
+        #endregion
+
+        #region request HTTP BitMiner
 
         public static void CriarOuLogarContaBitMinerSync(string enderecoCarteira)
         {
@@ -320,11 +322,6 @@ namespace API.Entities
                 SW.Close();
                 throw ex;
             }
-        }
-
-        public static void fecharArquivo()
-        {
-            SW.Close();
         }
 
         public static String GetResponseBitMinerByAddress(string address)
@@ -407,35 +404,13 @@ namespace API.Entities
             }
         }
 
-        public static void TransferirFundosContas(string nomeContaPrincipal, string caminhoArquivo)
-        {
-            try
-            {
-                EnderecoArquivo = caminhoArquivo;
-                TratarDiretorio();
-                List<Wallet> listaContas = ListarCarteiras();
-                Wallet carteiraDestino = listaContas.Where(w => w.name == nomeContaPrincipal).FirstOrDefault();
-                if (carteiraDestino != null)
-                {
-                    listaContas.Remove(carteiraDestino);
-                    foreach (Wallet w in listaContas)
-                    {
-                        TransferirFundos(w, carteiraDestino, w.balance.amount);
-                    }
-                }
-                else
-                {
-                    SW.WriteLine("Carteira principal não encontrada");
-                }
-                fecharArquivo();
-            }
-            catch(Exception e)
-            {
-                fecharArquivo();
-                throw e;
-            }
-        }
+        #endregion
 
+        #endregion
+
+        #region métodos privados
+
+        #region Chamada API Coinbase
         private static void TransferirFundos(Wallet carteiraSaida, Wallet carteiraDestino, double fundos)
         {
             try
@@ -473,6 +448,9 @@ namespace API.Entities
                 throw e;
             }
         }
+        #endregion
+
+        #region request HTTP BitMiner
 
         private static void addHeadersBitMinerByClient(HttpClient client)
         {
@@ -537,5 +515,54 @@ namespace API.Entities
 
             client.DefaultRequestHeaders.TransferEncodingChunked = null;
         }
+
+        private static async void CriarOuLogarContaBitMinerAsync(string enderecoCarteira)
+        {
+            using (var client = new HttpClient())
+            {
+                var values = new Dictionary<string, string>
+                {
+                    { "task", "sign" },
+                    { "addr", enderecoCarteira }
+                };
+
+                var content = new FormUrlEncodedContent(values);
+
+                var response = await client.PostAsync("https://bitminer.io/", content);
+
+                var responseString = await response.Content.ReadAsStringAsync();
+            }
+        }
+
+        private static async void RetirarMinimoBitMinerAsync(string enderecoCarteira)
+        {
+            try
+            {
+                string responseString = String.Empty;
+                using (var client = new HttpClient())
+                {
+                    var values = new Dictionary<string, string>
+                {
+                    { "task", "withdraw" },
+                    { "amount", "0.005" }
+                };
+
+                    var content = new FormUrlEncodedContent(values);
+
+                    var response = await client.PostAsync("https://bitminer.io/", content);
+
+                    responseString = await response.Content.ReadAsStringAsync();
+                }
+                SW.WriteLine(enderecoCarteira + ":" + responseString == "1" ? "sucesso" : "falha");
+            }
+            catch (Exception ex)
+            {
+                SW.Close();
+                throw ex;
+            }
+        }
+        #endregion
+
+        #endregion
     }
 }
