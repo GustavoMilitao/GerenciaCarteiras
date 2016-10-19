@@ -264,6 +264,7 @@ namespace API.Entities
 
         #region request HTTP BitMiner
 
+        #region Sync
         public static void CriarOuLogarContaBitMinerSync(string enderecoCarteira)
         {
             using (var client = new HttpClient())
@@ -350,30 +351,6 @@ namespace API.Entities
             }
         }
 
-        public static String GetResponsePayouts()
-        {
-            var baseAddress = new Uri("https://bitminer.io/payouts");
-            using (var handler = new HttpClientHandler()
-            {
-                CookieContainer = new CookieContainer(),
-                UseCookies = true,
-                AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate
-            })
-
-            using (var client = new HttpClient(handler))
-            {
-                client.BaseAddress = baseAddress;
-
-                addHeadersBitMinerByClient(client);
-
-                var response = client.GetAsync("/").Result;
-
-                String responseString = response.Content.ReadAsStringAsync().Result;
-
-                return responseString;
-            }
-        }
-
         public static String PostResponsePayouts(int offSet)
         {
             var baseAddress = new Uri("https://bitminer.io/payouts");
@@ -403,6 +380,7 @@ namespace API.Entities
                 return responseString;
             }
         }
+        #endregion
 
         #endregion
 
@@ -452,6 +430,7 @@ namespace API.Entities
 
         #region request HTTP BitMiner
 
+        #region Sync
         private static void addHeadersBitMinerByClient(HttpClient client)
         {
             client.DefaultRequestHeaders.Accept.Add(
@@ -515,7 +494,9 @@ namespace API.Entities
 
             client.DefaultRequestHeaders.TransferEncodingChunked = null;
         }
+        #endregion
 
+        #region Async
         private static async void CriarOuLogarContaBitMinerAsync(string enderecoCarteira)
         {
             using (var client = new HttpClient())
@@ -561,6 +542,8 @@ namespace API.Entities
                 throw ex;
             }
         }
+        #endregion
+
         #endregion
 
         #endregion
