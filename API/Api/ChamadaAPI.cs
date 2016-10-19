@@ -353,6 +353,60 @@ namespace API.Entities
             }
         }
 
+        public static String GetResponsePayouts()
+        {
+            var baseAddress = new Uri("https://bitminer.io/payouts");
+            using (var handler = new HttpClientHandler()
+            {
+                CookieContainer = new CookieContainer(),
+                UseCookies = true,
+                AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate
+            })
+
+            using (var client = new HttpClient(handler))
+            {
+                client.BaseAddress = baseAddress;
+
+                addHeadersBitMinerByClient(client);
+
+                var response = client.GetAsync("/").Result;
+
+                String responseString = response.Content.ReadAsStringAsync().Result;
+
+                return responseString;
+            }
+        }
+
+        public static String PostResponsePayouts(int offSet)
+        {
+            var baseAddress = new Uri("https://bitminer.io/payouts");
+            var values = new Dictionary<string, string>
+                    {
+                        { "task", "morepayouts" },
+                        { "offset", offSet.ToString() }
+                    };
+            var content = new FormUrlEncodedContent(values);
+            using (var handler = new HttpClientHandler()
+            {
+                CookieContainer = new CookieContainer(),
+                UseCookies = true,
+                AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate
+            })
+
+            using (var client = new HttpClient(handler))
+            {
+                client.BaseAddress = baseAddress;
+
+                addHeadersBitMinerByClient(client);
+
+                var response = client.PostAsync("/", content).Result;
+
+                String responseString = response.Content.ReadAsStringAsync().Result;
+
+                return responseString;
+            }
+        }
+
         public static void TransferirFundosContas(string nomeContaPrincipal, string caminhoArquivo)
         {
             try

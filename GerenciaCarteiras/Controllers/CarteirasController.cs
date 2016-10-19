@@ -31,6 +31,67 @@ namespace GerenciaCarteiras.Controllers
             return View("~/Views/Default/Default.cshtml", model);
         }
 
+        public ActionResult Payouts()
+        {
+            return View("~/Views/Carteiras/Payouts.cshtml");
+        }
+
+        public JsonResult GetResponsePayouts(int offSet)
+        {
+            List<string> paginas = new List<string>();
+            List<string> listaniveis = new List<string>();
+            string response = String.Empty;
+            do
+            {
+                response = ChamadaAPI.PostResponsePayouts(offSet);
+                paginas.Add(response);
+                offSet += 100;
+            } while (!String.IsNullOrEmpty(response));
+            string nivel = String.Empty;
+            int beforeLevel = 0;
+            string[] linhas;
+            ChamadaAPI.EnderecoArquivo = @"C:\LOGS\payouts.txt";
+            ChamadaAPI.TratarDiretorio();
+            foreach (string r in paginas)
+            {
+                linhas = r.Split(new string[]{ "<td>" }, StringSplitOptions.RemoveEmptyEntries);
+                foreach(string s in linhas)
+                {
+                    ChamadaAPI.SW.WriteLine(s);
+                }
+                //beforeLevel = r.IndexOf("BitMiner 1.");
+                //nivel = r.Substring(beforeLevel, beforeLevel + 12);
+                //listaniveis.Add(nivel);
+            }
+            ChamadaAPI.fecharArquivo();
+            //return Json(new { sucesso = true, paginacao = new JavaScriptSerializer().Serialize(paginas) });
+            return null;
+        }
+
+        public ActionResult TratarPayouts(string endereco)
+        {
+            return Json(new { sucesso = true, response = ChamadaAPI.GetResponseBitMinerByAddress(endereco) });
+        }
+
+        public JsonResult SalvarArquivo(string[] listaEnderecosComLevel, string caminhoArq)
+        {
+            try
+            {
+                ChamadaAPI.EnderecoArquivo = caminhoArq;
+                ChamadaAPI.TratarDiretorio();
+                foreach(string endereco in listaEnderecosComLevel)
+                {
+                    ChamadaAPI.SW.WriteLine(endereco);
+                }
+                ChamadaAPI.fecharArquivo();
+                return Json(new { sucesso = true });
+            }
+            catch(Exception ex)
+            {
+                return Json(new { sucesso = false, mensagem = ex.Message });
+            }
+        }
+
         public JsonResult ListarEnderecos(string accountId)
         {
             return Json(new { listaEnderecos = ChamadaAPI.ListarEnderecosPorIDCarteira(accountId) });

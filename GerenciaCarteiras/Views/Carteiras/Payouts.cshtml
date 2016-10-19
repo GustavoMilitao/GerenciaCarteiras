@@ -1,0 +1,41 @@
+﻿@using System.Web.Script.Serialization;
+@model GerenciaCarteiras.Models.ListaCarteirasModel
+@{
+    ViewBag.Title = "Menu";
+}
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<form>
+    <div class="col-sm-12">
+        <div class="row">
+            <div class="col-sm-6">
+                <h2>Payouts</h2>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-2">
+                Caminho Ler Arquivo
+                <input id="caminhoArquivoSalvar" />
+            </div>
+            <div class="col-sm-2">
+                <button type="button" id="btnRetirar" class="btn btn-primary">Retirar</button>
+            </div>
+        </div>
+    </div>
+</form>
+
+@section scripts {
+    <script type="text/javascript">
+        var urlTratarPayouts = '@Url.Action("TratarPayouts","Carteiras")';
+        var urlSalvarArquivo = '@Url.Action("SalvarArquivo","Carteiras")';
+        var urlGetPayouts = '@Url.Action("GetResponsePayouts", "Carteiras")';
+    </script>
+    @Scripts.Render("~/bundles/main")
+    @Scripts.Render("~/bundles/payouts")
+}
+
+

@@ -36,12 +36,12 @@ namespace GerenciaCarteiras.Controllers
                         {
 
                         }
-                        return Json(new { sucesso = true, urlListar = Url.Action("Enderecos", "Carteiras") });
+                        return Json(new { sucesso = true, urlListar = Url.Action("Payouts", "Carteiras") });
                     }
                     else
                     {
                         FormsAuthentication.SetAuthCookie(apiKey + ";" + apiSecret, true);
-                        return Json(new { sucesso = true, urlListar = Url.Action("Enderecos", "Carteiras") });
+                        return Json(new { sucesso = true, urlListar = Url.Action("Payouts", "Carteiras") });
                     }
                 }
                 else
